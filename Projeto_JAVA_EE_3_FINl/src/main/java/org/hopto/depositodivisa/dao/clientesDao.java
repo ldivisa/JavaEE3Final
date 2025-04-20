@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,32 +26,41 @@ public class clientesDao implements clientesInterface{
     ConexaoFactory conexaoFactory;
     PreparedStatement ps;
     ResultSet resultSet;
-    List<Clientes> lista;
+    List<Clientes> listaClientes;
  
     public clientesDao() {
+        listaClientes = new ArrayList<Clientes>();
      try {
-         this.conexaoFactory = (ConexaoFactory) new ConexaoFactory().getConnection();
+         this.connection = new ConexaoFactory().getConnection();
      } catch (Exception ex) {
          Logger.getLogger(clientesDao.class.getName()).log(Level.SEVERE, null, ex);
      }
-        connection = (Connection) conexaoFactory;
+        
     }
 
     @Override
-    public List<Clientes> getClientes() {
+    public List<Clientes> getListaClientes() {
         try {
-            ps =connection.prepareStatement("select * from clientes");
-            resultSet=ps.executeQuery();
-            while(resultSet.next()){
-            Clientes cliente = new Clientes();
-            cliente.setCodigo(resultSet.getInt("codigo"));
-            cliente.setNome(resultSet.getString("nome"));
-            lista.add(cliente);
+            try {
+                ps =connection.prepareStatement("select * from clientes");
+                resultSet=ps.executeQuery();
+                while(resultSet.next()){
+                    Clientes cliente = new Clientes();
+                    cliente.setCodigo(resultSet.getInt("codigo"));
+                    cliente.setNome(resultSet.getString("nome"));
+                    listaClientes.add(cliente);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(clientesDao.class.getName()).log(Level.SEVERE, null, ex);
             }
-                    } catch (SQLException ex) {
+            resultSet.close();
+            ps.close();
+            connection.close();
+
+        } catch (SQLException ex) {
             Logger.getLogger(clientesDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-    return lista;
+                return listaClientes;
     }
     
 }

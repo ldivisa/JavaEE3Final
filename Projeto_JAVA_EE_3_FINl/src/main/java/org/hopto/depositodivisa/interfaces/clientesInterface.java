@@ -12,5 +12,5 @@ import org.hopto.depositodivisa.model.Clientes;
  * @author Loja
  */
 public interface clientesInterface {
-public List<Clientes> getClientes()    ;
+public List<Clientes> getListaClientes()    ;
 }
