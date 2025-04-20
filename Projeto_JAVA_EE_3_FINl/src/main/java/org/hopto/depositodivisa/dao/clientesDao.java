@@ -7,6 +7,7 @@ package org.hopto.depositodivisa.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,7 @@ public class clientesDao implements clientesInterface{
     ConexaoFactory conexaoFactory;
     PreparedStatement ps;
     ResultSet resultSet;
- 
+    List<Clientes> lista;
  
     public clientesDao() {
      try {
@@ -37,8 +38,19 @@ public class clientesDao implements clientesInterface{
 
     @Override
     public List<Clientes> getClientes() {
-       
-    
+        try {
+            ps =connection.prepareStatement("select * from clientes");
+            resultSet=ps.executeQuery();
+            while(resultSet.next()){
+            Clientes cliente = new Clientes();
+            cliente.setCodigo(resultSet.getInt("codigo"));
+            cliente.setNome(resultSet.getString("nome"));
+            lista.add(cliente);
+            }
+                    } catch (SQLException ex) {
+            Logger.getLogger(clientesDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    return lista;
     }
     
 }
