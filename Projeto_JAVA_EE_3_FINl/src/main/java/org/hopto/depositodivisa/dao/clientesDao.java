@@ -22,45 +22,52 @@ import org.hopto.depositodivisa.model.Clientes;
  */
 public class clientesDao implements clientesInterface{
 
-    Connection connection;
-    ConexaoFactory conexaoFactory;
+    public static Connection conexao;
+    ConexaoFactory conFactory ;
     PreparedStatement ps;
     ResultSet resultSet;
     List<Clientes> listaClientes;
  
-    public clientesDao() {
+    public clientesDao()  {
+        conFactory= new ConexaoFactory();
         listaClientes = new ArrayList<Clientes>();
-     try {
-         this.connection = new ConexaoFactory().getConnection();
-     } catch (Exception ex) {
-         Logger.getLogger(clientesDao.class.getName()).log(Level.SEVERE, null, ex);
-     }
-        
+        conexao = conFactory.getConnection();
+         
     }
 
     @Override
     public List<Clientes> getListaClientes() {
-        try {
+        
             try {
-                ps =connection.prepareStatement("select * from clientes");
+                ps = conexao.prepareStatement("select * from clientes");
                 resultSet=ps.executeQuery();
-                while(resultSet.next()){
-                    Clientes cliente = new Clientes();
-                    cliente.setCodigo(resultSet.getInt("codigo"));
-                    cliente.setNome(resultSet.getString("nome"));
-                    listaClientes.add(cliente);
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(clientesDao.class.getName()).log(Level.SEVERE, null, ex);
+                    while(resultSet.next()){
+                        Clientes cliente = new Clientes();
+                        cliente.setCodigo(resultSet.getInt("codigo"));
+                        cliente.setNome(resultSet.getString("nome"));
+                        System.out.println("\n nome:"+resultSet.getString("nome"));
+                        listaClientes.add(cliente);
+                    }
+           
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
-            resultSet.close();
-            ps.close();
-            connection.close();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(clientesDao.class.getName()).log(Level.SEVERE, null, ex);
-        }
-                return listaClientes;
-    }
+            finally{
+           
+                try {
+                    resultSet.close();
+                    ps.close();
+                    conexao.close();
+                    conFactory.getConnection().close();
+                } catch (Exception ex) {
+                     throw new RuntimeException(ex);
+                }
+            }
+                    
+                   
+           
     
+    return listaClientes; 
 }
+}
+

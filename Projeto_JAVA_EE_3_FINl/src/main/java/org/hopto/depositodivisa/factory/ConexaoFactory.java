@@ -7,6 +7,8 @@ package org.hopto.depositodivisa.factory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -15,40 +17,22 @@ import java.sql.SQLException;
  */
 public class ConexaoFactory {
 
-	private volatile static ConexaoFactory instance = new ConexaoFactory();
+	
 	private final String usuario = "estudos";
 	private final String url  = "jdbc:mysql://depositodivisa2.hopto.org:3306/estudos";
 	private final String driver = "com.mysql.jdbc.Driver";
-	private final String senha = "Q2FyYWxob0Blc3R1ZG9zMQ==";
+	private final String senha = "Caralho@estudos1";
 
-	public ConexaoFactory(){
-	}
-
-	public static ConexaoFactory getInstance(){
-
-		synchronized(ConexaoFactory.class){
-			if(instance == null){
-				instance = new ConexaoFactory();
-			}
-			return instance;
-		}
-	}
-
-	public Connection getConnection() throws SQLException,Exception{
-
-	try {
-	    Class.forName(driver);
+	public Connection getConnection(){
+        try{
+            Class.forName(driver);
             return DriverManager.getConnection(url,usuario,senha);
-        } catch (ClassNotFoundException e) {           
-            
-            return null;
+        }catch( SQLException | ClassNotFoundException e){
+            throw new RuntimeException(e);
         }
-	}
-
-	public void closeConnection(Connection com) throws SQLException{
-		com.close();
-	}
-
-
-    
+            
+        }
+        
+        
+        
 }
